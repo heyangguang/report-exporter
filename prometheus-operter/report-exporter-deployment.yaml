@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-exporter
+  namespace: dcireport
+  labels:
+    k8s-app: report-exporter
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: report-exporter
+  template:
+    metadata:
+      labels:
+        k8s-app: report-exporter
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        disktype: nonssd
+      containers:
+      - name: elastic-exporter
+        image: 172.16.130.16/heyang/report_exporter:latest
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        ports:
+        - containerPort: 9100
+          name: http
+      volumes:
+      - name: tmp
+        persistentVolumeClaim:
+          claimName: dci-report-b

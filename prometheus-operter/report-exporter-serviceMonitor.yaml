@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: report-exporter
+  name: report-exporter
+  namespace: monitoring
+spec:
+  jobLabel: k8s-app
+  endpoints:
+  - interval: 30s
+    port: port
+    scheme: http
+    timeout: 60s
+  selector:
+    matchLabels:
+      k8s-app: report-exporter
+  namespaceSelector:
+    matchNames:
+      - dci-report
